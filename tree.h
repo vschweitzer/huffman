@@ -5,8 +5,8 @@
 #include "codeWord.h"
 
 typedef struct codeTree {
-    codeTree* left;
-    codeTree* right;
+    struct codeTree* zero;
+    struct codeTree* one;
     codeWord *code;
     uint64_t subcount;
 } codeTree;

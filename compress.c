@@ -66,3 +66,39 @@ void printCodes(codeWord ** code_array) {
     }
     printf("Total: %"PRIu64"\n", total_bytes);
 }
+
+// 1 marks the larger subcount, 0 the smaller
+codeTree * makeTree(codeWord ** code_array, uint8_t length_minus_one) {
+    // One codeWord
+    if(!length_minus_one) {
+        codeTree * root = NULL;
+        root = (codeTree *)calloc(1, sizeof(codeTree));
+        root->code = code_array[0];
+        root->subcount = root->code->count;
+        return root;
+    } else if(length_minus_one == 1) {
+        codeTree * root, * zero, * one;
+        root = (codeTree *)calloc(1, sizeof(codeTree));
+        zero = (codeTree *)calloc(1, sizeof(codeTree));
+        one = (codeTree *)calloc(1, sizeof(codeTree));
+
+        zero->code = code_array[0];
+        zero->subcount = zero->code->count;
+
+        one->code = code_array[1];
+        one->subcount = one->code->count;
+        
+        root->zero = zero;
+        root->one = one;
+        root->subcount = zero->subcount + one->subcount;
+
+        return root;
+    } else {
+        uint8_t counter_minus_one = length_minus_one;
+        {
+            printf("Counter: %d\n", counter_minus_one);
+        } while (counter_minus_one--);
+        
+        return NULL;
+    }
+}
