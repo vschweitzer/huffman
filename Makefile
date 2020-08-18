@@ -1,10 +1,19 @@
-EXTRA=-Wall -Wextra
+OUTPUT=huffman
+EXTRA=-Wall -Wextra -pedantic
 
-all: 
-	gcc $(EXTRA) tree.h error.h codeWord.h compress.h compress.c util.h util.c main.c -o huffman
+all: compress.o util.o main.o
+	gcc $(EXTRA) $^ -o $(OUTPUT)
 
-util.o: util.h util.c
-	gcc $(EXTRA) util.h util.c -o util.o
+main.o: main.c
+	gcc -c $^
 
+util.o: util.c
+	gcc $(EXTRA) -c $^
 
+compress.o: compress.c
+	gcc $(EXTRA) -c $^
 
+clean: 
+	rm -f *.h.gch
+	rm -f *.o
+	rm $(OUTPUT)
