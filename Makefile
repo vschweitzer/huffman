@@ -1,11 +1,11 @@
 OUTPUT=huffman
-EXTRA=-Wall -Wextra -pedantic
+EXTRA=-Wall -Wextra -pedantic -g3 -O0
 
 all: compress.o util.o main.o
 	gcc $(EXTRA) $^ -o $(OUTPUT)
 
 main.o: main.c
-	gcc -c $^
+	gcc $(EXTRA) -c $^
 
 util.o: util.c
 	gcc $(EXTRA) -c $^
