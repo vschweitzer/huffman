@@ -9,28 +9,20 @@
 #include "compress.h"
 
 uint8_t compress(char * input_file, char * output_file) {
-    codeWord * bytes[256], * word_buffer;
-    uint64_t bytes_in = 0;
+    codeTree ** node_array = NULL;
+    uint64_t byte_count;
 
     if(!input_file || !output_file) {
         return INVALID_ARGUMENT;
     }
 
-    word_buffer = (codeWord *)calloc(256, sizeof(codeWord));
-    if(!word_buffer) {
-        return NO_MEMORY;
+    byte_count = count_nodes(input_file, &node_array);
+    if(!byte_count) {
+        fprintf(stderr, "Could not read any bytes from %s", input_file);
+        return ERROR;
     }
-
-    for(unsigned int i = 0; i != 256; ++i) {
-        bytes[i] = &word_buffer[i];
-        bytes[i]->byte = (uint8_t)i;
-    }
-
-    bytes_in = count_codes(input_file, bytes);
-    printf("Read %"PRIu64" bytes\n", bytes_in);
-
-    sort_codes(bytes);
-    print_codes(bytes);
+    printf("Read %"PRIu64" bytes.\n", byte_count);
+    print_nodes(node_array);
 
     return SUCCESS;
 }

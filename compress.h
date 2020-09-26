@@ -8,7 +8,9 @@ uint64_t count_codes(char *, codeWord **);
 codeWord ** sort_codes(codeWord **);
 int compare_code_count(const void *, const void *);
 void print_codes(codeWord **);
-// Assumes codeWord * array is ordered ascending by count
-codeTree * make_tree(codeWord **, uint8_t);
+
+uint64_t count_nodes(char *, codeTree ***);
+void print_nodes(codeTree **);
+void print_code_word(codeWord);
 
 #endif

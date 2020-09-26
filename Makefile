@@ -16,4 +16,4 @@ compress.o: compress.c
 clean: 
 	rm -f *.h.gch
 	rm -f *.o
-	rm $(OUTPUT)
+	rm -f $(OUTPUT)
