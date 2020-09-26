@@ -26,11 +26,11 @@ uint8_t compress(char * input_file, char * output_file) {
         bytes[i]->byte = (uint8_t)i;
     }
 
-    bytes_in = countCodes(input_file, bytes);
+    bytes_in = count_codes(input_file, bytes);
     printf("Read %"PRIu64" bytes\n", bytes_in);
 
-    sortCodes(bytes);
-    printCodes(bytes);
+    sort_codes(bytes);
+    print_codes(bytes);
 
     return SUCCESS;
 }

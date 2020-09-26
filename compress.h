@@ -4,11 +4,11 @@
 #include "codeWord.h"
 #include "tree.h"
 
-uint64_t countCodes(char *, codeWord **);
-codeWord ** sortCodes(codeWord **);
-int compareCodeCount(const void *, const void *);
-void printCodes(codeWord **);
+uint64_t count_codes(char *, codeWord **);
+codeWord ** sort_codes(codeWord **);
+int compare_code_count(const void *, const void *);
+void print_codes(codeWord **);
 // Assumes codeWord * array is ordered ascending by count
-codeTree * makeTree(codeWord **, uint8_t);
+codeTree * make_tree(codeWord **, uint8_t);
 
 #endif

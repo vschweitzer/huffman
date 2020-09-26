@@ -5,7 +5,14 @@
 
 #include "compress.h"
 
-uint64_t countCodes(char * filename, codeWord ** code_array) {
+/*
+ * Reads in input file and count byte probability.
+ *
+ * @param filename the path to the input file.
+ * @param code_array address to write the word count array to.
+ * @return the total count of bytes read.
+ */
+uint64_t count_codes(char * filename, codeWord ** code_array) {
     FILE * input_file;
     int value;
     uint64_t total_count;
@@ -36,9 +43,11 @@ uint64_t countCodes(char * filename, codeWord ** code_array) {
     return total_count;
 }
 
-// This function is overly complicated, because it has to account for
-// differences in counts that do not fit in an int
-int compareCodeCount(const void * a, const void * b) {
+/*
+ * This function is overly complicated, because it has to account for
+ * differences in counts that do not fit in an int
+ */
+int compare_code_count(const void * a, const void * b) {
     if((*(codeWord **)a)->count >= (*(codeWord **)b)->count) {
         return -1;
     } else {
@@ -46,12 +55,16 @@ int compareCodeCount(const void * a, const void * b) {
     }
 }
 
-codeWord ** sortCodes(codeWord ** code_array) {
-    qsort((void *)(code_array), 256, sizeof(codeWord *), compareCodeCount);
+/*
+ * Sort code by probability, order is determined by compare_code_count()
+ */
+
+codeWord ** sort_codes(codeWord ** code_array) {
+    qsort((void *)(code_array), 256, sizeof(codeWord *), compare_code_count);
     return code_array;
 }
 
-void printCodes(codeWord ** code_array) {
+void print_codes(codeWord ** code_array) {
     uint64_t total_bytes = 0;
 
     for(unsigned int i = 0; i < 256; ++i) {
@@ -68,7 +81,7 @@ void printCodes(codeWord ** code_array) {
 }
 
 // 1 marks the larger subcount, 0 the smaller
-codeTree * makeTree(codeWord ** code_array, uint8_t length_minus_one) {
+codeTree * make_tree(codeWord ** code_array, uint8_t length_minus_one) {
     // One codeWord
     if(!length_minus_one) {
         codeTree * root = NULL;
@@ -99,7 +112,7 @@ codeTree * makeTree(codeWord ** code_array, uint8_t length_minus_one) {
         uint8_t counter_minus_one = length_minus_one;
         codeTree * root;
         // Make first tree out of first two codeWords
-        root = makeTree(code_array, 1);
+        root = make_tree(code_array, 1);
 
         do {
 
