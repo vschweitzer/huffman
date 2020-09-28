@@ -22,6 +22,7 @@ uint8_t compress(char * input_file, char * output_file) {
         return ERROR;
     }
     printf("Read %"PRIu64" bytes.\n", byte_count);
+    sort_nodes(node_array);
     print_nodes(node_array);
 
     return SUCCESS;

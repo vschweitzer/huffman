@@ -6,49 +6,12 @@
 #include "compress.h"
 
 /*
- * Reads in input file and count byte probability.
- *
- * @param filename the path to the input file.
- * @param code_array address to write the word count array to.
- * @return the total count of bytes read.
- */
-uint64_t count_codes(char * filename, codeWord ** code_array) {
-    FILE * input_file;
-    int value;
-    uint64_t total_count;
-
-    if(!filename || !code_array) {
-        return 0;
-    }
-
-    input_file = fopen(filename, "rb");
-    if(!input_file) {
-        return 0;
-    }
-
-    while(!feof(input_file)) {
-        uint8_t byte;
-
-        value = fgetc(input_file);
-        if(feof(input_file)) {
-            break;
-        }
-
-        byte = (uint8_t) value;
-        ++(code_array[byte]->count);
-    }
-
-    total_count = ftell(input_file);
-    fclose(input_file);
-    return total_count;
-}
-
-/*
  * This function is overly complicated, because it has to account for
- * differences in counts that do not fit in an int
+ * differences in counts that do not fit in an int.
+ * Sorts ascending
  */
-int compare_code_count(const void * a, const void * b) {
-    if((*(codeWord **)a)->count >= (*(codeWord **)b)->count) {
+int compare_node_count(const void * a, const void * b) {
+    if((*(codeTree **)a)->code->count >= (*(codeTree **)b)->code->count) {
         return -1;
     } else {
         return 1;
@@ -56,29 +19,19 @@ int compare_code_count(const void * a, const void * b) {
 }
 
 /*
- * Sort code by probability, order is determined by compare_code_count()
+ * Sort nodes by probability, order is determined by compare_code_count()
  */
 
-codeWord ** sort_codes(codeWord ** code_array) {
-    qsort((void *)(code_array), 256, sizeof(codeWord *), compare_code_count);
+codeTree ** sort_nodes(codeTree ** code_array) {
+    qsort((void *)(code_array), 256, sizeof(codeTree *), compare_node_count);
     return code_array;
 }
 
-void print_codes(codeWord ** code_array) {
-    uint64_t total_bytes = 0;
-
-    for(unsigned int i = 0; i < 256; ++i) {
-        if(code_array[i]->count) {
-            printf("Byte:  %#04x\nChar:  %c\nCount: %"PRIu64"\n",
-                code_array[i]->byte,
-                isprint(code_array[i]->byte) ? code_array[i]->byte : ' ',
-                code_array[i]->count
-                );
-            total_bytes += code_array[i]->count;
-        }
-    }
-    printf("Total: %"PRIu64"\n", total_bytes);
-}
+/*
+// TBD
+codeTree ** alloc_node_array();
+void disalloc_node_array();
+*/
 
 uint64_t count_nodes(char * filename, codeTree *** node_array) {
     codeTree * tree_buffer = NULL;
@@ -148,6 +101,9 @@ uint64_t count_nodes(char * filename, codeTree *** node_array) {
     return 0;
 }
 
+/*
+ * Print a fixed size array of nodes
+ */
 void print_nodes(codeTree ** node_array) {
     for(unsigned int i = 0; i < 256; ++i) {
         print_code_word(*(node_array[i]->code));
@@ -156,7 +112,52 @@ void print_nodes(codeTree ** node_array) {
     return;
 }
 
+/*
+ * Print a single code word, omitting the code (TODO)
+ */
 void print_code_word(codeWord c) {
     printf("%#04x : %c : %8"PRIu64" : \n", c.byte, isprint(c.byte) ? c.byte : ' ', c.count);
     return;
+}
+
+/*
+ * Build binary tree for huffman coding.
+ * Assign codes while building.
+ */
+codeTree * make_tree(codeTree ** node_array) {
+    sort_nodes(node_array);
+
+    // Get start of values > 0
+    // Build tree, write node codes as tree is built
+
+    return *node_array;
+}
+
+unsigned int get_min_two(codeTree ** node_array, codeTree ** min_node, codeTree ** s_min_node, uint8_t len_minus_one) {
+    if(!node_array == NULL) {
+        return 0;
+    }
+
+    if(len_minus_one) {
+        if(node_array[0]->subcount < node_array[1]->subcount) {
+            min_node = &node_array[0];
+            s_min_node = &node_array[1];
+        } else {
+            min_node = &node_array[1];
+            s_min_node = &node_array[0];
+        }
+    } else {
+        s_min_node = NULL;
+        min_node = node_array;
+        return 1;
+    }
+
+    for(unsigned int i = 2; i <= len_minus_one; ++i) {
+        if(min_node->subcount > node_array[i]->subcount) {
+            s_min_node = min_node;
+            min_node = &node_array[i];
+        }
+    }
+
+    return 2;
 }
