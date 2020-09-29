@@ -11,7 +11,7 @@
  * Sorts ascending
  */
 int compare_node_count(const void * a, const void * b) {
-    if((*(codeTree **)a)->code->count >= (*(codeTree **)b)->code->count) {
+    if((*(codeNode **)a)->code->count >= (*(codeNode **)b)->code->count) {
         return -1;
     } else {
         return 1;
@@ -22,8 +22,8 @@ int compare_node_count(const void * a, const void * b) {
  * Sort nodes by probability, order is determined by compare_code_count()
  */
 
-codeTree ** sort_nodes(codeTree ** code_array) {
-    qsort((void *)(code_array), 256, sizeof(codeTree *), compare_node_count);
+codeNode ** sort_nodes(codeNode ** code_array) {
+    qsort((void *)(code_array), 256, sizeof(codeNode *), compare_node_count);
     return code_array;
 }
 
@@ -33,8 +33,8 @@ codeTree ** alloc_node_array();
 void disalloc_node_array();
 */
 
-uint64_t count_nodes(char * filename, codeTree *** node_array) {
-    codeTree * tree_buffer = NULL;
+uint64_t count_nodes(char * filename, codeNode *** node_array) {
+    codeNode * tree_buffer = NULL;
     codeWord * word_buffer = NULL;
     uint64_t byte_count;
     FILE * input_file;
@@ -49,9 +49,9 @@ uint64_t count_nodes(char * filename, codeTree *** node_array) {
     }
 
     // pointer array
-    *node_array = (codeTree **)calloc(256, sizeof(codeTree *));
+    *node_array = (codeNode **)calloc(256, sizeof(codeNode *));
     // node array
-    tree_buffer = (codeTree *)calloc(256, sizeof(codeTree));
+    tree_buffer = (codeNode *)calloc(256, sizeof(codeNode));
     // code array
     word_buffer = (codeWord *)calloc(256, sizeof(codeWord));
 
@@ -104,7 +104,7 @@ uint64_t count_nodes(char * filename, codeTree *** node_array) {
 /*
  * Print a fixed size array of nodes
  */
-void print_nodes(codeTree ** node_array) {
+void print_nodes(codeNode ** node_array) {
     for(unsigned int i = 0; i < 256; ++i) {
         print_code_word(*(node_array[i]->code));
     }
@@ -120,21 +120,41 @@ void print_code_word(codeWord c) {
     return;
 }
 
+
+
 /*
  * Build binary tree for huffman coding.
  * Assign codes while building.
  */
-codeTree * make_tree(codeTree ** node_array) {
+codeNode * make_tree(codeNode ** node_array) {
+    uint8_t len_minus_one = 255;
+    codeNode * min_node = NULL, * s_min_node = NULL;
+
     sort_nodes(node_array);
+    while(len_minus_one) {
+        codeNode * new_node;
+
+        new_node = calloc(1, sizeof(codeNode));
+        if(!new_node) {
+            goto fail;
+        }
+
+        get_min_two(node_array, &min_node, &s_min_node, len_minus_one);
+
+        --len_minus_one;
+    }
 
     // Get start of values > 0
     // Build tree, write node codes as tree is built
 
     return *node_array;
+
+    fail:
+    return NULL;
 }
 
-unsigned int get_min_two(codeTree ** node_array, codeTree ** min_node, codeTree ** s_min_node, uint8_t len_minus_one) {
-    if(!node_array == NULL) {
+unsigned int get_min_two(codeNode ** node_array, codeNode ** min_node, codeNode ** s_min_node, uint8_t len_minus_one) {
+    if(node_array == NULL) {
         return 0;
     }
 

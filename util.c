@@ -9,7 +9,7 @@
 #include "compress.h"
 
 uint8_t compress(char * input_file, char * output_file) {
-    codeTree ** node_array = NULL;
+    codeNode ** node_array = NULL;
     uint64_t byte_count;
 
     if(!input_file || !output_file) {
